@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 
+let frontend_url = "";
+
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public
@@ -93,11 +95,14 @@ const sendMagicLink = asyncHandler(async (req, res) => {
     }
   });
 
+  // Set URL according to environment
+  process.env.NODE_ENV === "production" ? frontend_url = "https://aitas.tk/index.html" : frontend_url = "http://localhost:5500/index.html";
+
   var mailOptions = {
     from: process.env.EMAIL,
     to: email,
     subject: 'Magic link login for AI-TAS',
-    html: `<b>Hey there! </b> <br /><a href="http://localhost:5500/index.html?token=${token}&name=${user.name}">Click here</a> to login`,
+    html: `<b>Hey there! </b> <br /><a href="${frontend_url}?token=${token}&name=${user.name}">Click here</a> to login`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
